@@ -91,6 +91,7 @@ def find_nearest_sensor(timestamp_str):
             continue
     return closest
 
+
 @app.route('/')
 def index():
     files = sorted([f for f in os.listdir(UPLOAD_FOLDER) if f.endswith(".jpg")], reverse=True)
