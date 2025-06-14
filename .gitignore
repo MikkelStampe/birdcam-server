@@ -1,2 +1,3 @@
 /images
 /sensor_data.ndjson
+*.pyc

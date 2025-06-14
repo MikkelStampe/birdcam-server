@@ -6,6 +6,8 @@ import os
 import json
 import pytz
 
+from classify import classify_bird
+
 app = Flask(__name__)
 UPLOAD_FOLDER = "images"
 SENSOR_DATA_FILE = "sensor_data.ndjson"
@@ -29,13 +31,15 @@ def upload_image():
     with open(img_path, 'wb') as f:
         f.write(img)
 
+    species = classify_bird(img_path)
+
     txt_path = os.path.join(UPLOAD_FOLDER, f"{ts}.txt")
     with open(txt_path, 'w') as meta_file:
-        meta_file.write(human_readable)
+        meta_file.write(f"{human_readable} — {species}")
 
-    annotate_image(img_path, "Unknown Species")  # placeholder
+    annotate_image(img_path, species)
 
-    return {'status': 'ok', 'timestamp': ts}, 200
+    return {'status': 'ok', 'timestamp': ts, 'species': species}, 200
 
 @app.route('/upload-sensor-data', methods=['POST'])
 def upload_sensor_data():
