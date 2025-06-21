@@ -167,7 +167,7 @@ def data_table():
     <thead><tr><th>Timestamp</th><th>Temp (°C)</th><th>Humidity (%)</th><th>Battery (mV)</th></tr></thead><tbody>
     """
     for entry in reversed(data):
-        html += f"<tr><td>{entry['timestamp']}</td><td>{entry['temp']}</td><td>{entry['humidity']}</td><td>{entry['battery_mv']}</td></tr>"
+        html += f"<tr><td>{entry['timestamp']}</td><td>{entry['temperature']}</td><td>{entry['humidity']}</td><td>{entry['battery_mv']}</td></tr>"
     html += "</tbody></table></div></body></html>"
     return html
 
