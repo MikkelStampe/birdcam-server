@@ -31,33 +31,38 @@ def upload_image():
     with open(img_path, 'wb') as f:
         f.write(img)
 
-    species = classify_bird(img_path)
+    species = 'AI inactive' #classify_bird(img_path)
 
     txt_path = os.path.join(UPLOAD_FOLDER, f"{ts}.txt")
     with open(txt_path, 'w') as meta_file:
         meta_file.write(f"{human_readable} — {species}")
 
-    annotate_image(img_path, species)
+    # annotate_image(img_path, species)
 
     return {'status': 'ok', 'timestamp': ts, 'species': species}, 200
 
 @app.route('/upload-sensor-data', methods=['POST'])
 def upload_sensor_data():
-    data = request.get_json()
-    tz = pytz.timezone("Europe/Copenhagen")
-    now = datetime.now(tz).isoformat()
+    try:
+        data = request.get_json()
+        print(data)
+        tz = pytz.timezone("Europe/Copenhagen")
+        now = datetime.now(tz).isoformat()
 
-    record = {
-        "timestamp": now,
-        "temp": data.get("temp"),
-        "humidity": data.get("humidity"),
-        "battery_mv": data.get("battery_mv")
-    }
+        record = {
+            "timestamp": now,
+            "temperature": data.get("temperature"),
+            "humidity": data.get("humidity"),
+            "battery_mv": data.get("battery_voltage")
+        }
 
-    with open(SENSOR_DATA_FILE, "a") as f:
-        f.write(json.dumps(record) + "\n")
+        with open(SENSOR_DATA_FILE, "a") as f:
+            f.write(json.dumps(record) + "\n")
 
-    return {'status': 'ok'}, 200
+        return {'status': 'ok'}, 200
+    except Exception as e:
+        print(f"Upload sensor data error: {e}")
+        return {'status': 'failed'}, 500
 
 def load_sensor_data():
     records = []
@@ -124,7 +129,7 @@ def index():
         sensor = find_nearest_sensor(base_name)
         sensor_info = ""
         if sensor:
-            sensor_info = f"<small>🌡 {sensor['temp']}°C 💧 {sensor['humidity']}% 🔋 {sensor['battery_mv']} mV</small>"
+            sensor_info = f"<small>🌡 {sensor['temperature']}°C 💧 {sensor['humidity']}% 🔋 {sensor['battery_mv']} mV</small>"
 
         html += f'''
         <div class="col-md-4">
